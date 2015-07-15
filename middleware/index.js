@@ -12,4 +12,13 @@ module.exports = function(app) {
   }));
   app.use(passport.initialize());
   app.use(passport.session());
+
+  //cofigure app to handle CORS requests
+  app.use(function(req, res, next) {
+  	res.setHeader('Access-Control-Allow-Origin', '*');
+  	res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+  	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
+  	next();
+  });
+  
 }
