@@ -1,10 +1,12 @@
 var nconf = require('nconf');
 var path = require('path');
 
+
 nconf.env();
+var env = nconf.get('NODE_ENV');
+// console.log(env);
 
-var configPath = 'config-' + nconf.get('NODE_ENV') +'.json';
-
-nconf.file(path.join(__dirname, configPath));
+configPath = path.join(__dirname, 'config-'+env+'.json');
+nconf.file(configPath);
 
 module.exports = nconf;

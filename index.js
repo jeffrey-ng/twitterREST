@@ -18,4 +18,7 @@ require('./middleware')(app)
 require('./router')(app)
 
 var server = app.listen(config.get('server:port'),config.get('server:host'));
+console.log()
+// var server = app.listen(3000,'127.0.0.1');
+console.log("Listening on " + config.get('server:port'));
 module.exports = server;
