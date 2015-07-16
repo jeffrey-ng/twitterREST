@@ -3,22 +3,61 @@ var router = express.Router();
 
 var conn = require('../../db');
 var passport = require('../../auth');
+var jwt        = require('jsonwebtoken');
+var config     = require('../../config');
+
+
 
 // POST /api/auth/login
-router.post('/login', function(req,res) {
-  passport.authenticate('local', function(err, user,info) {
-    if (err) {
-      return res.sendStatus(500);
-    }
+// { "username": "c",
+  // "password": "ccc"
+// }
+router.post('/authenticate', function(req,res) {
+  console.log(req.body);
+  var User  = conn.model('User');
+  User.findOne({
+    username: req.body.username
+  }).select('name username password').exec(function(err, user) {
+
+    if (err) throw err;
+
+    // no user with that username was found
     if (!user) {
-      return res.sendStatus(403);
+      res.json({
+        success: false,
+        message: 'Authentication failed. User not found.'
+      });
+    } else if (user) {
+
+      // check if password matches
+      var validPassword = user.comparePassword(req.body.password);
+      if (!validPassword) {
+        res.json({
+          success: false,
+          message: 'Authentication failed. Wrong password.'
+        });
+      } else {
+
+        // if user is found and password is right
+        // create a token
+        var token = jwt.sign({
+          name: user.name,
+          username: user.username
+        }, config.get('secret'), {
+          expiresInMinutes: 1440 // expires in 24 hours
+        });
+
+        // return the information including token as JSON
+        res.json({
+          success: true,
+          message: 'Authenticated User. Enjoy your token!',
+          token: token
+        });
+      }
+
     }
 
-    req.login(user, function(err) {
-      if (err) { return res.sendStatus(500); }
-      return res.send({user: user.toClient()});
-    });
-  })(req,res);
+  });
 });
 
 // POST /api/auth/logout

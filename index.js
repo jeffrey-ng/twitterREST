@@ -14,13 +14,21 @@ var conn = require('./db');
 var ensureAuthentication = require('./middleware/ensureAuthentication');
 
 var app = express();
-app.use(express.static(__dirname+'/public'));
 require('./middleware')(app)
 require('./router')(app)
 
-app.get('*', function(req,res) {
-  res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
-})
+
+// app.use('/api/users', require('./router/routes/user'));
+// app.use('/api/tweets', require('./router/routes/tweet'));
+// app.use('/api/auth', require('./router/routes/auth'));
+
+app.use(express.static(__dirname+'/public'));
+app.get('*', function(req, res) {
+  console.log(req.url);
+  if (req.url === '/' || req.url === '/api/users') return next();
+	res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
+});
+
 
 var server = app.listen(config.get('server:port'),config.get('server:host'));
 console.log()

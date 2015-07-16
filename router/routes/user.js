@@ -3,32 +3,58 @@ var router = express.Router();
 
 var conn = require('../../db');
 var ensureAuthentication = require('../../middleware/ensureAuthentication');
+var jwt        = require('jsonwebtoken');
+var config     = require('../../config');
+
+
 
 // POST /api/users
+// { "user": {
+//     "username": "c",
+//     "name": "c",
+//     "email": "cc",
+//     "password": "ccc"
+//   }
+// }
 router.post('/', function(req,res) {
   var user = req.body.user;
   var User  = conn.model('User');
-
-  User.create(user, function(err,user) {
+  console.log(user);
+  console.log("before create")
+  User.create(user, function(err,newUser) {
+    console.log(newUser);
     if (err) {
       var code = err.code === 11000 ? 409 : 500;
+      console.log(err.code)
       return res.sendStatus(code);
     }
-    req.login(user,function(err) {
-      if (err) {
-        return res.sendStatus(500);
-      }
-      res.sendStatus(200);
+    console.log("created");
+    console.log(config.get('secret'));
+
+    var token = jwt.sign({
+      name: user.name,
+      username: user.username
+    }, config.get('secret'), {
+      expiresInMinutes: 1440 // expires in 24 hours
     });
+
+    // return the information including token as JSON
+    res.json({
+      success: true,
+      message: 'Enjoy your token!',
+      token: token
+    });
+
   });
 });
 
-// GET /api/users/:userId
-router.get('/:userId', function(req,res) {
-  var userId = req.params.userId;
+// GET /api/users/:username
+router.get('/:username', function(req,res) {
+  console.log(req.params.username);
+  var username = req.params.username;
   var User  = conn.model('User');
 
-  User.findOne({id:userId}, function(err,user) {
+  User.findOne({username:username}, function(err,user) {
 
     if (err) {
       return res.sendStatus(500);
@@ -42,15 +68,15 @@ router.get('/:userId', function(req,res) {
   });
 });
 
-// PUT /api/users/:userId
-router.put('/:userId', function(req,res) {
+// PUT /api/users/:username
+router.put('/:username', function(req,res) {
   var User  = conn.model('User');
-  if (req.user.id !== req.params.userId) {
+  if (req.user.username !== req.params.username) {
     return res.sendStatus(403);
   }
-  var userId = req.params.userId;
+  var username = req.params.username;
   var newPassword = req.body.password;
-  User.findOneAndUpdate({id: userId}, {password: newPassword}, function(err) {
+  User.findOneAndUpdate({username: username}, {password: newPassword}, function(err) {
     if (err) {
       return res.sendStatus(500);
     }
@@ -58,48 +84,48 @@ router.put('/:userId', function(req,res) {
   });
 });
 
-// POST /api/users/:userId/follow
-router.post('/:userId/follow',ensureAuthentication, function(req,res) {
+// POST /api/users/:username/follow
+router.post('/:username/follow',ensureAuthentication, function(req,res) {
   var User = conn.model('User');
-  var userId = req.params.userId;
-  User.findByUserId(userId, function (err, user) {
+  var username = req.params.username;
+  User.findByUsername(username, function (err, user) {
     if (err) {
       return res.sendStatus(500);
     }
     if (!user) {
       return res.sendStatus(403);
     }
-    req.user.follow(user.id, function(err) {
+    req.user.follow(user.username, function(err) {
       if (err) return res.sendStatus(500);
       res.sendStatus(200);
     });
   });
 });
 
-// POST /api/users/:userId/unfollow
-router.post('/:userId/unfollow', ensureAuthentication, function(req,res) {
+// POST /api/users/:username/unfollow
+router.post('/:username/unfollow', ensureAuthentication, function(req,res) {
   var User = conn.model('User');
-  var userId = req.params.userId;
+  var username = req.params.username;
 
-  User.findByUserId(userId, function(err,user) {
+  User.findByUserName(username, function(err,user) {
     if (err) {
       return res.sendStatus(500);
     }
     if (!user) {
       return res.sendStatus(403);
     }
-    req.user.unfollow(user.id, function(err) {
+    req.user.unfollow(user.username, function(err) {
       if (err) return res.sendStatus(500);
       res.sendStatus(200);
     });
   });
 });
 
-// POST /api/users/:userId/friends
-router.get('/:userId/friends', function(req,res) {
+// POST /api/users/:username/friends
+router.get('/:username/friends', function(req,res) {
   var User = conn.model('User');
-  var userId = req.params.userId;
-  User.findByUserId(userId, function(err,user) {
+  var username = req.params.username;
+  User.findByUserName(username, function(err,user) {
     if (err) {
       return res.sendStatus(500);
     }
@@ -116,11 +142,11 @@ router.get('/:userId/friends', function(req,res) {
   });
 });
 
-// POST /api/users/:userId/followers
-router.get('/:userId/followers', function(req,res) {
+// POST /api/users/:username/followers
+router.get('/:username/followers', function(req,res) {
   var User = conn.model('User');
-  var userId = req.params.userId;
-  User.findByUserId(userId, function(err, user) {
+  var username = req.params.username;
+  User.findByUserName(username, function(err, user) {
     if (err) {
       return res.sendStatus(500);
     }

@@ -7,16 +7,17 @@ var ensureAuthentication = require('../../middleware/ensureAuthentication');
 // GET /api/tweets
 router.get('/', function(req,res) {
   var Tweet = conn.model('Tweet');
-  var userId = req.query.userId;
+  var username = req.query.username;
   var stream = req.query.stream;
   var query = null
   var options = {sort: {created:-1}};
+  console.log(username);
 
-  if (stream === 'profile_timeline' && userId) {
-    query = {userId: userId};
+  if (stream === 'profile_timeline' && username) {
+    query = {username: username};
 
   } else if (stream ==='home_timeline') {
-    query =  {userId: { $in: req.user.followingIds }}
+    query =  {username: { $in: req.user.followingIds }}
 
   } else {
     return res.sendStatus(400);
@@ -51,7 +52,9 @@ router.get('/:tweetId', function(req,res) {
 router.post('/',ensureAuthentication,function(req,res) {
   var Tweet  = conn.model('Tweet');
   var tweet = req.body.tweet;
-  tweet.userId = req.user.id
+  console.log(req.body);
+  console.log(tweet);
+  // tweet.username = req.user.username
   tweet.created = Math.floor(Date.now() / 1000);
 
   Tweet.create(tweet, function(err,tweet) {
@@ -73,7 +76,7 @@ router.delete('/:tweetId', ensureAuthentication, function(req,res) {
     if (!tweet) {
       return res.sendStatus(404);
     }
-    if (tweet.userId !== req.user.id) {
+    if (tweet.username !== req.user.username) {
       return res.sendStatus(403);
     }
     Tweet.findByIdAndRemove(tweetId, function(err) {

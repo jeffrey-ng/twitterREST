@@ -46,7 +46,7 @@ describe("Test /api/tweets", function() {
   it("test scenario 1", function(done) {
     request(app)
       .post('/api/tweets')
-      .send({tweet: {text: 'Test tweet', userId: 'test'}})
+      .send({tweet: {text: 'Test tweet', username: 'test'}})
       .expect(403, done)
   })
 

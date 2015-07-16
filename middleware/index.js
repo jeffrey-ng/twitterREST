@@ -10,8 +10,8 @@ module.exports = function(app) {
     resave: false,
     saveUninitialized: true
   }));
-  app.use(passport.initialize());
-  app.use(passport.session());
+  // app.use(passport.initialize());
+  // app.use(passport.session());
 
   //cofigure app to handle CORS requests
   app.use(function(req, res, next) {
@@ -20,5 +20,5 @@ module.exports = function(app) {
   	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
   	next();
   });
-  
+
 }
