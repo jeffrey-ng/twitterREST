@@ -8,13 +8,13 @@ var config     = require('../../config');
 
 
 
-// POST /api/auth/login
+// POST /api/auth/authenticate
 // { "username": "c",
   // "password": "ccc"
 // }
 router.post('/authenticate', function(req,res) {
-  console.log(req.body);
   var User  = conn.model('User');
+  console.log("Authenticating");
   User.findOne({
     username: req.body.username
   }).select('name username password').exec(function(err, user) {

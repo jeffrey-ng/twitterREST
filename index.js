@@ -24,13 +24,10 @@ require('./router')(app)
 
 app.use(express.static(__dirname+'/public'));
 app.get('*', function(req, res) {
-  console.log(req.url);
-  if (req.url === '/' || req.url === '/api/users') return next();
 	res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
 });
 
 
 var server = app.listen(config.get('server:port'),config.get('server:host'));
-console.log()
 console.log("Listening on " + config.get('server:port'));
 module.exports = server;

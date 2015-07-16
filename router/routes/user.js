@@ -47,6 +47,21 @@ router.post('/', function(req,res) {
 
   });
 });
+router.get('/',function(req,res) {
+  var User = conn.model('User')
+  User.find({}, function(err, users) {
+      if (err) res.send(err);
+
+      // return the users
+      res.json(users);
+    });
+});
+
+
+router.get('/me', ensureAuthentication,function(req, res) {
+  res.send(req.decoded);
+});
+
 
 // GET /api/users/:username
 router.get('/:username', function(req,res) {
@@ -67,6 +82,7 @@ router.get('/:username', function(req,res) {
     });
   });
 });
+
 
 // PUT /api/users/:username
 router.put('/:username', function(req,res) {
@@ -162,5 +178,6 @@ router.get('/:username/followers', function(req,res) {
     });
   });
 });
+
 
 module.exports = router;
