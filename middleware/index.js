@@ -1,7 +1,6 @@
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-var passport = require('../auth');
 module.exports = function(app) {
   app.use(bodyParser.json());
   app.use(cookieParser())

@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 
 var conn = require('../../db');
-var passport = require('../../auth');
 var jwt        = require('jsonwebtoken');
 var config     = require('../../config');
 
