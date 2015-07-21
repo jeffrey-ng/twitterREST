@@ -22,11 +22,12 @@
 	<!-- controllers -->
 	<script src="app/controllers/mainCtrl.js"></script>
 	<script src="app/controllers/userCtrl.js"></script>
+	<script src="app/controllers/tweetCtrl.js"></script>
 
 	<!-- services -->
 	<script src="app/services/authService.js"></script>
 	<script src="app/services/userService.js"></script>
-
+	<script src="app/services/tweetService.js"></script>
 	<!-- main Angular app files -->
 	<script src="app/app.routes.js"></script>
 	<script src="app/app.js"></script>
@@ -38,7 +39,7 @@
 	<div class="navbar navbar-inverse" ng-if="main.loggedIn">
 	<div class="container">
 		<div class="navbar-header">
-			<a href="/" class="navbar-brand"><span class="glyphicon glyphicon-fire text-danger"></span> User CRM</a>
+			<a href="/" class="navbar-brand"><span class="glyphicon glyphicon-comment "></span> Twitter-ish</a>
 		</div>
 		<ul class="nav navbar-nav">
 			<li><a href="/users"><span class="glyphicon glyphicon-user"></span> Users</a></li>

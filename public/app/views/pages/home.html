@@ -1,13 +1,15 @@
-<div class="jumbotron text-center">
-	<h1>Welcome to Twitter Clone!</h1>
+<div ng-controller="homeTweetController as homeTweet">
+  <div class="page-header" ng-if="homeTweet.loggedIn">
+    <h1>
+      myTweets
+    </h1>
 
-	<div ng-if="!main.loggedIn">
-		<p>Login to see manage your users.</p>
-		<a href="/login" class="btn btn-primary">Login</a>
-	</div>
+  </div>
 
-	<div ng-if="main.loggedIn">
-		<p>Manage your users.</p>
-		<a href="/users" class="btn btn-primary">View Users</a>
-	</div>
+<div class="jumbotron" ng-if="!homeTweet.loggedIn">
+  <div>
+    <p>Login to see the world.</p>
+    <a class="btn btn-primary" href="/login">Login</a>
+  </div>
+</div>
 </div>

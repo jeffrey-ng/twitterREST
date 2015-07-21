@@ -50,4 +50,8 @@ angular.module('mainCtrl', [])
 		Auth.createSampleUser();
 	};
 
+	vm.processing = true;
+	
+
+
 });

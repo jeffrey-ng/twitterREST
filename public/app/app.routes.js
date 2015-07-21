@@ -4,9 +4,11 @@ angular.module('app.routes', ['ngRoute'])
 
 	$routeProvider
 
-		// route for the home page
+		// route for the welcome page
 		.when('/', {
-			templateUrl : 'app/views/pages/home.html'
+			templateUrl : 'app/views/pages/home.html',
+			controller  : 'mainController',
+			controllerAs: 'main'
 		})
 
 		// login page
@@ -26,14 +28,14 @@ angular.module('app.routes', ['ngRoute'])
 		// form to create a new user
 		// same view as edit page
 		.when('/users/create', {
-			templateUrl: 'app/views/pages/users/single.html',
+			templateUrl: 'app/views/pages/users/singleEdit.html',
 			controller: 'userCreateController',
 			controllerAs: 'user'
 		})
 
 		// page to edit a user
-		.when('/users/:user_id', {
-			templateUrl: 'app/views/pages/users/single.html',
+		.when('/users/:user_id/edit', {
+			templateUrl: 'app/views/pages/users/singleEdit.html',
 			controller: 'userEditController',
 			controllerAs: 'user'
 		});
