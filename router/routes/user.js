@@ -19,8 +19,6 @@ var config     = require('../../config');
 router.post('/', function(req,res) {
   var user = req.body.user;
   var User  = conn.model('User');
-  console.log(user);
-  console.log("before create")
   User.create(user, function(err,newUser) {
     console.log(newUser);
     if (err) {
@@ -103,37 +101,56 @@ router.put('/:username', function(req,res) {
 // POST /api/users/:username/follow
 router.post('/:username/follow',ensureAuthentication, function(req,res) {
   var User = conn.model('User');
-  var username = req.params.username;
-  User.findByUsername(username, function (err, user) {
+  var followUsername = req.params.username;
+  var myUsername = req.body.username;
+  User.findByUserName(followUsername, function (err, followUser) {
     if (err) {
       return res.sendStatus(500);
     }
-    if (!user) {
+    if (!followUser) {
       return res.sendStatus(403);
     }
-    req.user.follow(user.username, function(err) {
-      if (err) return res.sendStatus(500);
-      res.sendStatus(200);
-    });
+    console.log(req.body);
+    User.findByUserName(myUsername, function(err,myUser) {
+      if (err) {
+        return res.sendStatus(500);
+      }
+      if(!myUser) {
+        return res.sendStatus(403);
+      }
+      myUser.follow(followUser.username, function(err) {
+        if (err) return res.sendStatus(500);
+        res.sendStatus(200);
+      })
+    })
   });
 });
 
 // POST /api/users/:username/unfollow
 router.post('/:username/unfollow', ensureAuthentication, function(req,res) {
   var User = conn.model('User');
-  var username = req.params.username;
+  var unfollowUsername = req.params.username;
+  var myUsername = req.body.username;
 
-  User.findByUserName(username, function(err,user) {
+  User.findByUserName(unfollowUsername, function(err,unfollowUser) {
     if (err) {
       return res.sendStatus(500);
     }
-    if (!user) {
+    if (!unfollowUser) {
       return res.sendStatus(403);
     }
-    req.user.unfollow(user.username, function(err) {
-      if (err) return res.sendStatus(500);
-      res.sendStatus(200);
-    });
+    User.findByUserName(myUsername, function(err,myUser) {
+      if (err) {
+        return res.sendStatus(500);
+      }
+      if(!myUser) {
+        return res.sendStatus(403);
+      }
+      myUser.unfollow(unfollowUser.username, function(err) {
+        if (err) return res.sendStatus(500);
+        res.sendStatus(200);
+      })
+    })
   });
 });
 
@@ -158,7 +175,7 @@ router.get('/:username/friends', function(req,res) {
   });
 });
 
-// POST /api/users/:username/followers
+// GET /api/users/:username/followers
 router.get('/:username/followers', function(req,res) {
   var User = conn.model('User');
   var username = req.params.username;

@@ -28,5 +28,20 @@ angular.module('userService', [])
     userFactory.delete = function(id) {
       return $http.delete('/api/users/' + id);
     };
+
+    userFactory.follow = function(followId, myUserData) {
+      return $http.put('/api/users/' + followId +'/follow',myUserData);
+    }
+    userFactory.unfollow = function(unfollowId, myUserData) {
+      return $http.put('/api/users/' + unfollowId +'/unfollow',myUserData);
+    }
+
+    userFactory.getFollowers = function(id) {
+      return $http.get('/api/users/'+id+'/followers');
+    }
+    userFactory.getFriends = function(id) {
+      return $http.get('/api/users/'+id+'/friends');
+    }
+
     return userFactory;
   });

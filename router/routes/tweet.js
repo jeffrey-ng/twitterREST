@@ -7,29 +7,49 @@ var ensureAuthentication = require('../../middleware/ensureAuthentication');
 // GET /api/tweets
 router.get('/', function(req,res) {
   var Tweet = conn.model('Tweet');
+  var User = conn.model('User');
   var username = req.query.username;
   var stream = req.query.stream;
   var query = null
   var options = {sort: {created:-1}};
   console.log(username);
 
+
+  console.log("before")
+
   if (stream === 'profile_timeline' && username) {
     query = {username: username};
+    Tweet.find(query, null, options, function(err,tweets) {
+      if (err) {
+        return res.sendStatus(500);
+      }
+      var returnTweets = tweets.map(function(tweet){return tweet.toClient()});
+      res.send({tweets: returnTweets});
+    });
 
   } else if (stream ==='home_timeline') {
-    query =  {username: { $in: req.user.followingIds }}
+    User.findByUserName(username, function(err, user) {
+      query =  {username: { $in: user.followingIds }}
+      Tweet.find(query, null, options, function(err,tweets) {
+        if (err) {
+          return res.sendStatus(500);
+        }
+        var returnTweets = tweets.map(function(tweet){return tweet.toClient()});
+        res.send({tweets: returnTweets});
+      });
+    })
 
   } else {
     return res.sendStatus(400);
   }
+    // Tweet.find(query, null, options, function(err,tweets) {
+    //   if (err) {
+    //     return res.sendStatus(500);
+    //   }
+    //   var returnTweets = tweets.map(function(tweet){return tweet.toClient()});
+    //   res.send({tweets: returnTweets});
+    // });
 
-  Tweet.find(query, null, options, function(err,tweets) {
-    if (err) {
-      return res.sendStatus(500);
-    }
-    var returnTweets = tweets.map(function(tweet){return tweet.toClient()});
-    res.send({tweets: returnTweets});
-  });
 });
 
 // GET /api/tweets/:tweetId
